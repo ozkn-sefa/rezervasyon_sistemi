@@ -270,6 +270,7 @@ VarsayımlarVarsayımlar:
 Veritabanı şeması önceden tanımlıdır (kullanicilar, ilanlar, rezervasyon, vb.).
 Kullanıcıların e-posta adresleri benzersizdir.
 Tarih formatı %Y-%m-%d veya %Y-%m-%d %H:%M:%S şeklindedir.
+Uygulamanın eposta sisteminin çalışması için kendi eposta adresinizi ve güvenlik anahtarını koda eklemeniz gerekmektedir.
 ```
 ## Hata YönetimiHata Yönetimi
 
