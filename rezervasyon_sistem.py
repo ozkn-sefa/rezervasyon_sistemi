@@ -16,8 +16,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def send_reservation_email(recipient_email, message):
-    sender_email = "osefaa5353@gmail.com"
-    app_password = "ztnz uufd ebhi oabj"
+    sender_email = "?"
+    app_password = "?"
 
 
     msg = MIMEMultipart()
@@ -1515,4 +1515,5 @@ def verileri_guncelle():
 
 if (__name__ == '__main__'):
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
     app.run(host='0.0.0.0', port=5000, debug=True)
