@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tiny House - Ana Sayfa</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 15px 0 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 30px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 30px;
+    }
+
+    /* Sol filtreleme kısmı */
+    .filtreler {
+      width: 250px;
+      height: 500px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    .filtreler h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .filtreler form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .filtreler form div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filtreler form label {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .filtreler form input[type="text"],
+    .filtreler form input[type="number"] {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .filtreler form input[type="text"]:focus,
+    .filtreler form input[type="number"]:focus {
+      border-color: #27ae60;
+    }
+
+    .filtreler form button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .filtreler form button:hover {
+      background-color: #219150;
+    }
+
+    /* İlan listesi */
+    .ilanlar-listesi {
+      flex: 1;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    .ilan-karti {
+      display: flex;
+      background-color: white;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .ilan-karti img {
+      width: 250px;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .ilan-detaylari {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .ilan-detaylari h3 {
+      margin-top: 0;
+      color: #34495e;
+    }
+
+    .ilan-detaylari p {
+      margin: 8px 0;
+    }
+
+    .rezervasyon-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .rezervasyon-btn:hover {
+      background-color: #219150;
+    }
+
+    footer {
+      background-color: #ecf0f1;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+/* Flash message styles */
+    .flash-messages {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 300px;
+    }
+
+    .alert {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      color: #333;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .alert.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 5px solid #28a745;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-left: 5px solid #dc3545;
+    }
+
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border-left: 5px solid #17a2b8;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border-left: 5px solid #ffc107;
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #333;
+      margin-left: 10px;
+    }
+
+    .alert-close:hover {
+      color: #000;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button class="alert-close">×</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+ <script>
+ // Flash message handling
+    document.addEventListener('DOMContentLoaded', () => {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach((alert, index) => {
+        // Show alert with delay for staggered effect
+        setTimeout(() => {
+          alert.classList.add('show');
+        }, index * 100);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+          alert.classList.remove('show');
+          setTimeout(() => alert.remove(), 300);
+        }, 5000);
+
+        // Close button functionality
+        const closeBtn = alert.querySelector('.alert-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+          });
+        }
+      });
+    });
+    window.addEventListener('load', () => {
+        sessionStorage.setItem('reloading', 'false');
+    });
+
+    window.addEventListener('beforeunload', () => {
+        sessionStorage.setItem('reloading', 'true');
+    });
+
+    window.addEventListener('unload', () => {
+        const isReloading = sessionStorage.getItem('reloading') === 'true';
+        if (!isReloading) {
+            navigator.sendBeacon('/logout', '');
+        }
+    });
+</script>
+
+
+  <header>
+    <h1>Tiny House - Ana Sayfa</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('kullanici_paneli') }}">Ana Sayfa</a></li>
+        <li><a href="{{ url_for('rezervasyonlarim') }}">Rezervasyonlarım</a></li>
+        
+        <li><a href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+   <!-- Sol Taraf - Filtreleme -->
+<div class="filtreler">
+  <h3>Filtrele</h3>
+  <form method="get" action="{{ url_for('kullanici_paneli') }}">
+    <div>
+      <label for="adres">Adres:</label>
+      <input type="text" id="adres" name="adres" value="{{ request.args.get('adres', '') }}">
+    </div>
+    <div>
+      <label for="fiyat">Max Fiyat:</label>
+      <input type="number" id="fiyat" name="fiyat" value="{{ request.args.get('fiyat', '') }}">
+    </div>
+    <div>
+      <label for="oda">Oda Sayısı:</label>
+      <input type="number" id="oda" name="oda" value="{{ request.args.get('oda', '') }}">
+    </div>
+    <div>
+      <label for="kisi">Kişi Sayısı:</label>
+      <input type="number" id="kisi" name="kisi" value="{{ request.args.get('kisi', '') }}">
+    </div>
+    <div>
+      <label for="baslangic_tarihi">Başlangıç Tarihi:</label>
+      <input type="date" id="baslangic_tarihi" name="baslangic_tarihi" value="{{ request.args.get('baslangic_tarihi', '') }}">
+    </div>
+    <div>
+      <label for="bitis_tarihi">Bitiş Tarihi:</label>
+      <input type="date" id="bitis_tarihi" name="bitis_tarihi" value="{{ request.args.get('bitis_tarihi', '') }}">
+    </div>
+    <button type="submit">Filtrele</button>
+  </form>
+</div>
+
+    <!-- Sağ Taraf - İlanlar -->
+    <div class="ilanlar-listesi">
+      <h2>Tiny House İlanları</h2>
+      {% for ilan in ilanlar %}
+      <div class="ilan-karti">
+        <img src="{{ url_for('static', filename='uploads/' + ilan.resim_path) }}" alt="İlan Fotoğrafı">
+        <div class="ilan-detaylari">
+          <h3>{{ ilan.baslik }}</h3>
+          <p><strong>Açıklama:</strong> {{ ilan.aciklama }}</p>
+          <p><strong>Adres:</strong> {{ ilan.adres }}</p>
+          <p><strong>Fiyat:</strong> {{ ilan.fiyat }}₺</p>
+          <p><strong>Oda:</strong> {{ ilan.oda_sayisi }} | <strong>Kişi:</strong> {{ ilan.kisi_sayisi }}</p>
+         <a href="{{ url_for('rezervasyon_yap', ilan_id=ilan.ilan_id) }}" class="rezervasyon-btn">Rezervasyon Yap</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Tiny House Sistemi</p>
+  </footer>
+
+</body>
+</html>

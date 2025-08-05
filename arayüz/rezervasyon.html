@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tiny House - Rezervasyon</title>
+  <!-- Add flatpickr CSS and JS from CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 15px 0 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 30px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 30px;
+    }
+
+    .ilan-detay {
+      width: 250px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .ilan-detay img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .ilan-detay p {
+      margin: 8px 0;
+    }
+
+    .rezervasyon-formu {
+      flex: 1;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .rezervasyon-formu h2 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    .rezervasyon-formu form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .rezervasyon-formu label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .rezervasyon-formu input {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .rezervasyon-formu input:focus {
+      border-color: #27ae60;
+    }
+
+    .rezervasyon-formu button {
+      background-color: #27ae60;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .rezervasyon-formu button:hover {
+      background-color: #219150;
+    }
+
+    footer {
+      background-color: #ecf0f1;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+
+    /* Flash message styles */
+    .flash-messages {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 300px;
+    }
+
+    .alert {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      color: #333;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .alert.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 5px solid #28a745;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-left: 5px solid #dc3545;
+    }
+
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border-left: 5px solid #17a2b8;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border-left: 5px solid #ffc107;
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #333;
+      margin-left: 10px;
+    }
+
+    .alert-close:hover {
+      color: #000;
+    }
+
+    /* Custom styles for flatpickr */
+    .flatpickr-day.reserved {
+      background: #f8d7da !important;
+      color: #721c24 !important;
+      border-color: #dc3545 !important;
+      cursor: not-allowed !important;
+    }
+
+    .flatpickr-day.reserved:hover {
+      background: #f8d7da !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+            <button class="alert-close">×</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <header>
+    <h1>Rezervasyon Yap</h1>
+    <nav>
+      <ul>
+        <li><a href="{{ url_for('kullanici_paneli') }}">Ana Sayfa</a></li>
+        <li><a href="{{ url_for('rezervasyonlarim') }}">Rezervasyonlarım</a></li>
+        
+        <li><a href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Sol Kısım - İlan Bilgileri -->
+    <div class="ilan-detay">
+      <img src="{{ url_for('static', filename='uploads/' + ilan.resim_path) }}" alt="İlan Resmi">
+      <p><strong>Başlık:</strong> {{ ilan.baslik }}</p>
+      <p><strong>Açıklama:</strong> {{ ilan.aciklama }}</p>
+      <p><strong>Adres:</strong> {{ ilan.adres }}</p>
+      <p><strong>Fiyat:</strong> {{ ilan.fiyat }}₺</p>
+      <p><strong>Oda:</strong> {{ ilan.oda_sayisi }}</p>
+      <p><strong>Kişi:</strong> {{ ilan.kisi_sayisi }}</p>
+    </div>
+
+    <!-- Sağ Kısım - Rezervasyon Formu -->
+    <div class="rezervasyon-formu">
+      <h2>Rezervasyon ve Ödeme Bilgileri</h2>
+      <form method="post" action="{{ url_for('rezervasyon_yap', ilan_id=ilan.ilan_id) }}">
+        <!-- Rezervasyon Bilgileri -->
+        <div>
+          <label for="adsoyad">Ad Soyad:</label>
+          <input type="text" id="adsoyad" name="adsoyad" required>
+        </div>
+        <div>
+          <label for="email">E-posta:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+          <label for="telefon">Telefon:</label>
+          <input type="text" id="telefon" name="telefon" required>
+        </div>
+        <div>
+          <label for="baslangic">Başlangıç Tarihi:</label>
+          <input type="text" id="baslangic" name="baslangic_tarihi" class="flatpickr" required>
+        </div>
+        <div>
+          <label for="bitis">Bitiş Tarihi:</label>
+          <input type="text" id="bitis" name="bitis_tarihi" class="flatpickr" required>
+        </div>
+        <!-- Kart Bilgileri -->
+        <hr>
+        <h3>Kart Bilgileri</h3>
+        <div>
+          <label for="kart_adi">Kart Üzerindeki İsim:</label>
+          <input type="text" id="kart_adi" name="kart_adi" title="Büyük harflerle ve boşluklarla yazınız" required>
+        </div>
+        <div>
+          <label for="kart_numara">Kart Numarası:</label>
+          <input type="text" id="kart_numara" name="kart_numara" maxlength="16" minlength="16" placeholder="1234567812345678" title="16 haneli kart numarası girin" required>
+        </div>
+        <div>
+          <label for="kart_son_kullanim">Son Kullanma Tarihi (AA/YY):</label>
+          <input type="text" id="kart_son_kullanim" name="kart_son_kullanim" placeholder="12/27" maxlength="5" title="Format: AA/YY" required>
+        </div>
+        <div>
+          <label for="kart_cvv">CVV:</label>
+          <input type="text" id="kart_cvv" name="kart_cvv" maxlength="4" title="3 veya 4 haneli CVV kodu girin" required>
+        </div>
+        <button type="submit">Ödeme Yap</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Tiny House Sistemi</p>
+  </footer>
+
+  <script>
+    // Flash message handling
+    document.addEventListener('DOMContentLoaded', () => {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach((alert, index) => {
+        setTimeout(() => {
+          alert.classList.add('show');
+        }, index * 100);
+        setTimeout(() => {
+          alert.classList.remove('show');
+          setTimeout(() => alert.remove(), 300);
+        }, 5000);
+        const closeBtn = alert.querySelector('.alert-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+          });
+        }
+      });
+    });
+
+    // Pass reserved dates from Python to JavaScript
+    const reservedDates = {{ rezerve_gunler | tojson }};
+    console.log('Reserved Dates:', reservedDates);
+
+    // Helper function to format date as YYYY-MM-DD without timezone shift
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Initialize flatpickr for date inputs
+    document.addEventListener('DOMContentLoaded', () => {
+      const startDatePicker = flatpickr('#baslangic', {
+        dateFormat: 'Y-m-d',
+        minDate: 'today',
+        disable: reservedDates,
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+          const dateStr = formatDate(dayElem.dateObj);
+          console.log('Checking date:', dateStr, 'Reserved:', reservedDates.includes(dateStr));
+          if (reservedDates.includes(dateStr)) {
+            dayElem.classList.add('reserved');
+          }
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+          const startDate = new Date(dateStr);
+          const nextDay = new Date(startDate);
+          nextDay.setDate(startDate.getDate() + 1);
+
+          // Update end date picker's minDate
+          endDatePicker.set('minDate', formatDate(getNextAvailableDate(nextDay)));
+
+          // Validate start date
+          if (reservedDates.includes(dateStr)) {
+            instance.clear();
+            alert('Seçilen başlangıç tarihi zaten rezerve edilmiş. Lütfen başka bir tarih seçin.');
+          }
+        }
+      });
+
+      const endDatePicker = flatpickr('#bitis', {
+        dateFormat: 'Y-m-d',
+        minDate: 'today',
+        disable: reservedDates,
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+          const dateStr = formatDate(dayElem.dateObj);
+          console.log('Checking date:', dateStr, 'Reserved:', reservedDates.includes(dateStr));
+          if (reservedDates.includes(dateStr)) {
+            dayElem.classList.add('reserved');
+          }
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+          const startDate = new Date(document.getElementById('baslangic').value);
+          const endDate = new Date(dateStr);
+
+          // Validate end date
+          if (endDate <= startDate) {
+            instance.clear();
+            alert('Bitiş tarihi başlangıç tarihinden sonra olmalıdır.');
+            return;
+          }
+
+          // Check if any date in the range is reserved
+          let currentDate = new Date(startDate);
+          while (currentDate <= endDate) {
+            const formattedDate = formatDate(currentDate);
+            if (reservedDates.includes(formattedDate)) {
+              instance.clear();
+              alert('Seçilen tarih aralığında rezerve edilmiş günler var. Lütfen başka bir aralık seçin.');
+              break;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        }
+      });
+
+      // Function to find the next available date
+      function getNextAvailableDate(startDate) {
+        let nextDate = new Date(startDate);
+        while (reservedDates.includes(formatDate(nextDate))) {
+          nextDate.setDate(nextDate.getDate() + 1);
+        }
+        return nextDate;
+      }
+    });
+
+    // Session handling
+    window.addEventListener('load', () => {
+      sessionStorage.setItem('reloading', 'false');
+    });
+
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('reloading', 'true');
+    });
+
+    window.addEventListener('unload', () => {
+      const isReloading = sessionStorage.getItem('reloading') === 'true';
+      if (!isReloading) {
+        navigator.sendBeacon('/logout', '');
+      }
+    });
+  </script>
+</body>
+</html>

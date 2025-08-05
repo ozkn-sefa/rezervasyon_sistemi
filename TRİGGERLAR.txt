@@ -1,0 +1,35 @@
+CREATE TRIGGER trg_gun_gecti_mi
+ON rezervasyon
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(bugün)
+    BEGIN
+        -- Bitiş tarihi geçmiş ve durumu 'onaylandı' olanları 'tamamlandı' yap
+        UPDATE rezervasyon
+        SET durum = 'tamamlandı'
+        WHERE durum = 'onaylandı'
+          AND bitis_tarihi < CAST(GETDATE() AS DATE);
+
+        -- Bitiş tarihi geçmiş ve durumu 'beklemede' olanları 'iptal edildi' yap
+        UPDATE rezervasyon
+        SET durum = 'iptal edildi'
+        WHERE durum = 'beklemede'
+          AND bitis_tarihi < CAST(GETDATE() AS DATE);
+    END
+END;
+CREATE TRIGGER trg_kullanici_sil
+ON kullanicilar
+AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE ilanlar
+    SET durum = 'silindi'
+    WHERE ev_sahibi_id IN (
+        SELECT kullanici_id FROM deleted
+    );
+END;

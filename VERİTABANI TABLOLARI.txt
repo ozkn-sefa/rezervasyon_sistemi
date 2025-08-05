@@ -1,0 +1,75 @@
+-- Kullanicilar tablosu
+CREATE TABLE kullanicilar (
+    kullanici_id INT IDENTITY(1,1) PRIMARY KEY,
+    kullanici_ad NVARCHAR(100) NOT NULL,
+    eposta NVARCHAR(100) NOT NULL UNIQUE,
+    sifre NVARCHAR(64) NOT NULL, -- SHA256 hash için 64 karakter
+    kullanici_tipi NVARCHAR(20) NOT NULL CHECK (kullanici_tipi IN ('admin', 'ev_sahibi', 'kullanici')),
+    aktif BIT DEFAULT 0,
+    kullanici_tarihi DATETIME DEFAULT GETDATE()
+);
+
+-- İlanlar tablosu
+CREATE TABLE ilanlar (
+    ilan_id INT IDENTITY(1,1) PRIMARY KEY,
+    ev_sahibi_id INT NOT NULL,
+    baslik NVARCHAR(200) NOT NULL,
+    aciklama NVARCHAR(MAX),
+    adres NVARCHAR(500) NOT NULL,
+    fiyat DECIMAL(10,2) NOT NULL,
+    oda_sayisi INT NOT NULL,
+    kisi_sayisi INT NOT NULL,
+    resim_path NVARCHAR(255),
+    durum NVARCHAR(20) NOT NULL CHECK (durum IN ('aktif', 'pasif')),
+    ilan_tarihi DATETIME DEFAULT GETDATE(),
+    
+);
+
+-- Rezervasyonlar tablosu
+CREATE TABLE rezervasyon (
+    rezervasyon_id INT IDENTITY(1,1) PRIMARY KEY,
+    ilan_id INT NOT NULL,
+    kullanici_id INT NOT NULL,
+    ev_sahibi_id INT NOT NULL,
+    adsoyad NVARCHAR(100) NOT NULL,
+    email NVARCHAR(100) NOT NULL,
+    telefon NVARCHAR(20) NOT NULL,
+    baslangic_tarihi DATE NOT NULL,
+    bitis_tarihi DATE NOT NULL,
+    toplam_fiyat DECIMAL(10,2) NOT NULL,
+    durum NVARCHAR(20) NOT NULL CHECK (durum IN ('beklemede', 'onaylandı', 'iptal edildi' , 'tamamlandı')),
+    olusturma_tarihi DATETIME DEFAULT GETDATE(),
+    iptal_tarihi DATETIME,
+    iptal_nedeni NVARCHAR(500),
+    FOREIGN KEY (ilan_id) REFERENCES ilanlar(ilan_id),
+ 
+);
+
+-- Ödemeler tablosu
+CREATE TABLE odemeler (
+    odeme_id INT IDENTITY(1,1) PRIMARY KEY,
+    kullanici_id INT NOT NULL,
+    ilan_id INT NOT NULL,
+    rezervasyon_id INT NOT NULL,
+    kart_adi NVARCHAR(100) NOT NULL,
+    kart_numara NVARCHAR(16) NOT NULL,
+    kart_son_kullanim NVARCHAR(5) NOT NULL, -- Format: AA/YY
+    kart_cvv NVARCHAR(4) NOT NULL,
+    toplam_tutar DECIMAL(10,2) NOT NULL,
+    kayit_tarihi DATETIME DEFAULT GETDATE(),
+   
+    FOREIGN KEY (rezervasyon_id) REFERENCES rezervasyon(rezervasyon_id)
+);
+
+-- Yorumlar tablosu
+CREATE TABLE yorumlar (
+    yorum_id INT IDENTITY(1,1) PRIMARY KEY,
+    rezervasyon_id INT NOT NULL,
+    yorum NVARCHAR(MAX) NOT NULL,
+    puan INT NOT NULL CHECK (puan BETWEEN 1 AND 5),
+    yorum_tarihi DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (rezervasyon_id) REFERENCES rezervasyon(rezervasyon_id)
+);
+
+
+
