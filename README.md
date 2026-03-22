@@ -206,7 +206,7 @@ Kod, Flask uygulamasını temel alan bir web uygulamasıdır ve aşağıdaki ana
 
 ## Uygulama içi görüntüler
 <img width="1472" height="857" alt="Ekran görüntüsü 2026-01-12 140913" src="https://github.com/user-attachments/assets/5f179f55-f259-4c25-bcd1-ff4a96948f60" />
-<img width="1705" height="855" alt="Ekran görüntüsü 2026-01-12 140957" src="https://github.com/user-attachments/assets/cad28793-243f-44a1-ab3b-46923f884742" />
+
 <img width="1918" height="871" alt="Ekran görüntüsü 2026-01-12 141158" src="https://github.com/user-attachments/assets/12f7c5fc-9a39-486b-9fa4-969b8bde417a" />
 <img width="1913" height="868" alt="Ekran görüntüsü 2026-01-12 141217" src="https://github.com/user-attachments/assets/025987c3-d6ef-4c71-b808-cade1d254b67" />
 
